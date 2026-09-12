@@ -98,6 +98,9 @@ services:
       UNREALIRCD_API_USERNAME: ${UNREALIRCD_API_USERNAME:-admin}
       UNREALIRCD_API_PASSWORD: ${RPC_PASSWORD}
       FILEHOST_PUBLIC_URL: ${FILEHOST_PUBLIC_URL}
+      # How long an uploaded file stays reachable. Two hours gives a reader
+      # time to open what was shared while a conversation is still going.
+      DELETE_TIMEOUT_MINUTES: "${DELETE_TIMEOUT_MINUTES:-120}"
       VOICE_TURN_DISABLE_EMBEDDED: ${VOICE_TURN_DISABLE_EMBEDDED:-}
       VOICE_WEBRTC_PORT_MIN: "${VOICE_WEBRTC_PORT_MIN:-50000}"
       VOICE_WEBRTC_PORT_MAX: "${VOICE_WEBRTC_PORT_MAX:-50100}"
