@@ -83,6 +83,9 @@ services:
     volumes:
       - ${OBBY_API_DATA_BIND:-/data/obby/api-data}:/app/data
       - ${OBBY_API_IMAGES_BIND:-/data/obby/api-images}:/app/images
+      # Shared files and custom emoji live here. Without this they sit in the
+      # container's own layer, where a redeploy takes every one of them.
+      - ${OBBY_API_UPLOADS_BIND:-/data/obby/api-uploads}:/app/uploads
       - ${VOICE_BRIDGE_BIND:-/data/obby/voice-bridge}:/run/obbyirc
     environment:
       PORT: "8080"
