@@ -11,7 +11,7 @@
 services:
   obbyircd:
     # renovate: datasource=docker depName=obbyworld/obbyircd
-    image: ${OBBYIRCD_IMAGE:-obbyworld/obbyircd:${OBBYIRCD_VERSION:-6.2.8.3}}
+    image: ${OBBYIRCD_IMAGE:-obbyworld/obbyircd:${OBBYIRCD_VERSION:-sha-f762f13}}
     restart: unless-stopped
     expose:
       - "8080"
@@ -72,7 +72,7 @@ services:
 
   obby-api:
     # renovate: datasource=docker depName=obbyworld/obby-api
-    image: ${OBBY_API_IMAGE:-obbyworld/obby-api:${OBBY_API_VERSION:-0.1.2}}
+    image: ${OBBY_API_IMAGE:-obbyworld/obby-api:${OBBY_API_VERSION:-sha-1c6c041}}
     restart: unless-stopped
     depends_on:
       obbyircd:
