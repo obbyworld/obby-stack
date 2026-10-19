@@ -115,7 +115,7 @@ services:
 
   obby:
     # renovate: datasource=docker depName=obbyworld/obby
-    image: ${OBBY_WEB_IMAGE:-obbyworld/obby:${OBBY_WEB_VERSION:-ae4c235a1605df4d5171d14f7bec41870e38b8ea}}
+    image: ${OBBY_WEB_IMAGE:-obbyworld/obby:${OBBY_WEB_VERSION:-9bc09b9059872f35391c2f24b80b59bf929babc9}}
     restart: unless-stopped
     profiles: ["frontend"]
     expose:
