@@ -115,19 +115,29 @@ services:
 
   obby:
     # renovate: datasource=docker depName=obbyworld/obby
-    image: ${OBBY_WEB_IMAGE:-obbyworld/obby:${OBBY_WEB_VERSION:-latest}}
+    image: ${OBBY_WEB_IMAGE:-obbyworld/obby:${OBBY_WEB_VERSION:-ae4c235a1605df4d5171d14f7bec41870e38b8ea}}
     restart: unless-stopped
     profiles: ["frontend"]
     expose:
       - "80"
-    env_file:
-      - path: .env
-        required: false
+    environment:
+      VITE_DEFAULT_IRC_SERVER: ${WEB_IRC_SERVER:-wss://${API_FQDN}:443}
+      VITE_DEFAULT_IRC_SERVER_NAME: ${WEB_NETWORK_NAME:-${NETWORK_NAME}}
+      VITE_DEFAULT_IRC_CHANNELS: ${WEB_DEFAULT_CHANNELS:-}
+      VITE_HIDE_SERVER_LIST: "${WEB_HIDE_SERVER_LIST:-true}"
     labels:
       - traefik.enable=true
-      - traefik.http.routers.web.rule=Host(`${WEB_FQDN}`)
-      - traefik.http.routers.web.tls=true
-      - traefik.http.services.web.loadbalancer.server.port=80
+      - traefik.http.routers.obby-web.rule=Host(`${WEB_FQDN}`)
+      - traefik.http.routers.obby-web.entrypoints=https
+      - traefik.http.routers.obby-web.tls=true
+      - traefik.http.routers.obby-web.tls.certresolver=letsencrypt
+      - traefik.http.routers.obby-web.service=obby-web
+      - traefik.http.routers.obby-web-http.rule=Host(`${WEB_FQDN}`)
+      - traefik.http.routers.obby-web-http.entrypoints=http
+      - traefik.http.routers.obby-web-http.middlewares=obby-web-https
+      - traefik.http.routers.obby-web-http.service=obby-web
+      - traefik.http.middlewares.obby-web-https.redirectscheme.scheme=https
+      - traefik.http.services.obby-web.loadbalancer.server.port=80
 
   obby-panel:
     # renovate: datasource=docker depName=obbyworld/webpanel

@@ -42,6 +42,10 @@ should be set explicitly for any deployment you care about.
 
 Set `COMPOSE_PROFILES=frontend` in `.env` to make `frontend` the default.
 
+The web client serves `WEB_FQDN` and connects to `wss://API_FQDN`. Set
+`WEB_NETWORK_NAME` (defaults to `NETWORK_NAME`) and `WEB_DEFAULT_CHANNELS`
+(comma separated) to name the network and pick the channels it joins.
+
 ## Volumes
 
 Bind-mounted under `/data/obby/` by default. Override per-path with
