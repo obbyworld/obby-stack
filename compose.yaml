@@ -35,6 +35,8 @@ services:
       VOICE_TURN_TTL: ${VOICE_TURN_TTL:-}
       INVITE_PAGE_PORT: "${INVITE_PAGE_PORT:-8661}"
       INVITE_BASE_URL: ${INVITE_BASE_URL:-}
+      WEBPUSH_BACKEND_URL: ${WEBPUSH_BACKEND_URL:-https://${API_FQDN}}
+      WEBPUSH_BACKEND_KEY: ${IRC_SERVER_KEY}
     env_file:
       - path: .env
         required: false
