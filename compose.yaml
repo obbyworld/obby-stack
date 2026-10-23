@@ -11,7 +11,7 @@
 services:
   obbyircd:
     # renovate: datasource=docker depName=obbyworld/obbyircd
-    image: ${OBBYIRCD_IMAGE:-obbyworld/obbyircd:${OBBYIRCD_VERSION:-sha-f762f13}}
+    image: ${OBBYIRCD_IMAGE:-obbyworld/obbyircd:${OBBYIRCD_VERSION:-sha-d4167f1}}
     restart: unless-stopped
     expose:
       - "8080"
@@ -72,7 +72,7 @@ services:
 
   obby-api:
     # renovate: datasource=docker depName=obbyworld/obby-api
-    image: ${OBBY_API_IMAGE:-obbyworld/obby-api:${OBBY_API_VERSION:-sha-1c6c041}}
+    image: ${OBBY_API_IMAGE:-obbyworld/obby-api:${OBBY_API_VERSION:-sha-b111966}}
     restart: unless-stopped
     depends_on:
       obbyircd:
@@ -115,7 +115,7 @@ services:
 
   obby:
     # renovate: datasource=docker depName=obbyworld/obby
-    image: ${OBBY_WEB_IMAGE:-obbyworld/obby:${OBBY_WEB_VERSION:-82adc0418d4f19c19a0ec3884dece039644303a6}}
+    image: ${OBBY_WEB_IMAGE:-obbyworld/obby:${OBBY_WEB_VERSION:-f0ded21d679091d21e34d475b81824bb5093a2a2}}
     restart: unless-stopped
     profiles: ["frontend"]
     expose:
