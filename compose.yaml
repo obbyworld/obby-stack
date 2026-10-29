@@ -34,7 +34,8 @@ services:
       VOICE_TURN_SHARED_SECRET: ${VOICE_TURN_SHARED_SECRET:-}
       VOICE_TURN_TTL: ${VOICE_TURN_TTL:-}
       INVITE_PAGE_PORT: "${INVITE_PAGE_PORT:-8661}"
-      INVITE_BASE_URL: ${INVITE_BASE_URL:-}
+      INVITE_BASE_URL: ${INVITE_BASE_URL:-${INVITE_FQDN:+https://${INVITE_FQDN}/i/}}
+      INVITE_WEB_URL: ${INVITE_WEB_URL:-${WEB_FQDN:+https://${WEB_FQDN}/}}
       WEBPUSH_BACKEND_URL: ${WEBPUSH_BACKEND_URL:-https://${API_FQDN}}
       WEBPUSH_BACKEND_KEY: ${IRC_SERVER_KEY}
     env_file:
@@ -50,6 +51,7 @@ services:
       - traefik.enable=true
       - traefik.http.routers.obbyircd-invite.rule=Host(`${INVITE_FQDN}`)
       - traefik.http.routers.obbyircd-invite.tls=true
+      - traefik.http.routers.obbyircd-invite.tls.certresolver=letsencrypt
       - traefik.http.routers.obbyircd-invite.service=obbyircd-invite
       - traefik.http.services.obbyircd-invite.loadbalancer.server.port=${INVITE_PAGE_PORT:-8661}
 
