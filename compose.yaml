@@ -11,7 +11,7 @@
 services:
   obbyircd:
     # renovate: datasource=docker depName=obbyworld/obbyircd
-    image: ${OBBYIRCD_IMAGE:-obbyworld/obbyircd:${OBBYIRCD_VERSION:-6.2.8.5}}
+    image: ${OBBYIRCD_IMAGE:-obbyworld/obbyircd:${OBBYIRCD_VERSION:-6.2.8.6}}
     restart: unless-stopped
     expose:
       - "8080"
@@ -28,6 +28,7 @@ services:
       - ${VOICE_BRIDGE_BIND:-/data/obby/voice-bridge}:/run/obbyirc
     environment:
       WS_PORT: "${WS_PORT:-8080}"
+      WS_TRUSTED_PROXIES: ${WS_PROXY_IP:-10.213.71.6}
       SSL_PORT: "${SSL_PORT:-6697}"
       VOICE_BRIDGE_SOCKET: /run/obbyirc/voice.sock
       VOICE_TURN_EXTERNAL_URLS: ${VOICE_TURN_EXTERNAL_URLS:-}
@@ -47,6 +48,11 @@ services:
       timeout: 5s
       retries: 6
       start_period: 30s
+    networks:
+      default:
+      websocket:
+        aliases:
+          - obbyircd-websocket
     labels:
       - traefik.enable=true
       - traefik.http.routers.obbyircd-invite.rule=Host(`${INVITE_FQDN}`)
@@ -65,6 +71,10 @@ services:
     configs:
       - source: caddyfile
         target: /etc/caddy/Caddyfile
+    networks:
+      default:
+      websocket:
+        ipv4_address: ${WS_PROXY_IP:-10.213.71.6}
     labels:
       - traefik.enable=true
       - traefik.http.routers.obby-edge.rule=Host(`${API_FQDN}`)
@@ -74,7 +84,7 @@ services:
 
   obby-api:
     # renovate: datasource=docker depName=obbyworld/obby-api
-    image: ${OBBY_API_IMAGE:-obbyworld/obby-api:${OBBY_API_VERSION:-0.1.4}}
+    image: ${OBBY_API_IMAGE:-obbyworld/obby-api:${OBBY_API_VERSION:-0.1.5}}
     restart: unless-stopped
     depends_on:
       obbyircd:
@@ -117,7 +127,7 @@ services:
 
   obby:
     # renovate: datasource=docker depName=obbyworld/obby
-    image: ${OBBY_WEB_IMAGE:-obbyworld/obby:${OBBY_WEB_VERSION:-0002e1e641bed8040140347a094460b407f1fc3c}}
+    image: ${OBBY_WEB_IMAGE:-obbyworld/obby:${OBBY_WEB_VERSION:-d730aa40f711c23b0856d59ff588698373d65253}}
     restart: unless-stopped
     profiles: ["frontend"]
     expose:
@@ -172,18 +182,34 @@ services:
       - traefik.http.routers.panel.tls.certresolver=letsencrypt
       - traefik.http.services.panel.loadbalancer.server.port=8080
 
+# Caddy reaches obbyircd's websocket port over this network from one fixed
+# address, so obbyircd can trust the client IP Caddy forwards from that
+# address alone.
+networks:
+  websocket:
+    internal: true
+    ipam:
+      config:
+        - subnet: ${WS_PROXY_SUBNET:-10.213.71.0/29}
+
 configs:
   caddyfile:
     content: |
       {
       	auto_https off
       	admin off
+      	servers {
+      		trusted_proxies static private_ranges
+      		trusted_proxies_strict
+      	}
       }
       :80 {
       	@websocket {
       		header Connection *Upgrade*
       		header Upgrade websocket
       	}
-      	reverse_proxy @websocket obbyircd:${WS_PORT:-8080}
+      	reverse_proxy @websocket obbyircd-websocket:${WS_PORT:-8080} {
+      		header_up X-Forwarded-For {client_ip}
+      	}
       	reverse_proxy obby-api:8080
       }
